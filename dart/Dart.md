@@ -18,3 +18,5 @@ Dart의 컴파일러 기술을 사용하면 다양한 방식으로 코드를 실
 ```
 choco install dart-sdk
 ```
+<li><a href="./MainFunction.md">main function</a></li>
+<li><a href="./변수.md">변수</a></li>

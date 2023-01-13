@@ -20,3 +20,4 @@ choco install dart-sdk
 ```
 <li><a href="./MainFunction.md">main function</a></li>
 <li><a href="./변수.md">변수</a></li>
+<li><a href="./DataTypes.md">DataTypes</a></li>

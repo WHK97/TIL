@@ -55,7 +55,7 @@ void main() {
 ```
 named argument 순서에 상관없이 argument의 이름들만 적어주면 된다.
 named argument을 사용하면 함수부분도 수정이 필요하다
-
+1. null safety로인한 default value
 ```
 String Hello({String name ="none" , int age = 0, String country = "none"}) {
   return "Hello $name, you are $age, and you come from $country";
@@ -69,6 +69,7 @@ void main() {
 }
 ```
 하지만 유저의 입력이 무조건 필요할 경우 위에 코드는 사용하기 어렵다.
+
 2. required modifier
 ```
 String Hello(

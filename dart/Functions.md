@@ -102,3 +102,26 @@ void main() {
 required를 사용하면 좋은점은 dart에 입력을 안할시 알려준다
 
 ## QQ Operator
+??연산자는 left ?? right 왼쪽값이 null인지 체크해서 null이 아니면 left 값을 리턴 맞으면 right값을 리턴을 해준다.
+```
+String capitalizeName(String? name) =>
+    //name != null ? name.toUpperCase() : "ANON";
+    name?.toUpperCase() ?? "ANON";
+```
+```
+void main() {
+ String? name;
+ name ??= "Kim"; //name이 null이라면 이 값을 할당해줘
+}
+
+```
+## Typedef
+Typedef는 자료형에 aliias를 붙일 수 있게 해준다 (자료형의 별명)
+```
+typedef ListOfInts = List<int>;
+ListOfInts number(ListOfInts list) {
+  var reversd = list.reversed;
+  return reversd
+.toList(); //List를 reversed하면 List랑 조금 다른 iterable이 돼서 다시 리스트로 변환을 해줘야한다
+}
+```

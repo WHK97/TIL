@@ -68,7 +68,8 @@ void main() {
   ));
 }
 ```
-
+하지만 유저의 입력이 무조건 필요할 경우 위에 코드는 사용하기 어렵다.
+2. required modifier
 ```
 String Hello(
     {required String name, required int age, required String country}) {

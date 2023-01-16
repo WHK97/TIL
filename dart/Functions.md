@@ -33,6 +33,7 @@ fat arrow syntax로 곧바로 return을 할 수 있다 만약 api호출하거나
 
 ## Named Parameters
 Dart의 function은 Named Parameters를 지원한다 (Flutter에 자주 사용되는 개념)
+### Positional Parameters
 ```
 String Hello(String name, int age, String country) {
   return "Hello $name, you are $age, and you come from $country";
@@ -42,8 +43,23 @@ void main() {
 }
 
 ```
-위 코드는 좋은 코드는 아니다. 사용자가 요소의 순서들을 잊어버릴수 있고 해당하는 요소가 무엇인지 확인하기 어렵기 때문이다. named argument를 쓰면 된다.
+###  Optional Positional Parameters
+named argument를 적용하고 싶지 않지만 required를 사용하고 싶을때 쓰면 된다
+```
+String Hello(
+     String name,  int age,   [String? country = "Korea"]) {
+  return "Hello $name, you are $age, and you come from $country";
+}
 
+void main() {
+  print(Hello("KIm",20));
+}
+```
+
+위 코드는 좋은 코드는 아니다. 사용자가 요소의 순서들을 잊어버릴수 있고 해당하는 요소가 무엇인지 확인하기 어렵기 때문이다. named argument를 쓰면 된다.
+### named argument
+named argument 순서에 상관없이 argument의 이름들만 적어주면 된다.
+named argument을 사용하면 함수부분도 수정이 필요하다
 ```
 void main() {
   print(Hello(
@@ -52,10 +68,6 @@ void main() {
     name: "Kim"
   ));
 }
-```
-named argument 순서에 상관없이 argument의 이름들만 적어주면 된다.
-named argument을 사용하면 함수부분도 수정이 필요하다
-
 ```
 1. null safety로인한 default value
 ```
@@ -88,3 +100,5 @@ void main() {
 }
 ```
 required를 사용하면 좋은점은 dart에 입력을 안할시 알려준다
+
+## QQ Operator

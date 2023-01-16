@@ -22,3 +22,4 @@ choco install dart-sdk
 <li><a href="./변수.md">변수</a></li>
 <li><a href="./DataTypes.md">DataTypes</a></li>
 <li><a href="./Functions.md">Functions</a></li>
+<li><a href="./Class.md">Class</a></li>

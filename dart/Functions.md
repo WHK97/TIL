@@ -58,7 +58,7 @@ named argument을 사용하면 함수부분도 수정이 필요하다
 
 ```
 
-```
+
 String Hello({String name ="none" , int age = 0, String country = "none"}) {
   return "Hello $name, you are $age, and you come from $country";
 }
@@ -69,7 +69,7 @@ void main() {
     name: "Kim",
   ));
 }
-```
+
 
 ```
 String Hello(

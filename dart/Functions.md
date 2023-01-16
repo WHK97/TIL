@@ -72,7 +72,7 @@ void main() {
 named argument 순서에 상관없이 argument의 이름들만 적어주면 된다.
 named argument을 사용하면 함수부분도 수정이 필요하다
 
-```
+
 1. null safety로인한 default value
 ```
 String Hello({String name ="none" , int age = 0, String country = "none"}) {

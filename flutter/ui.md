@@ -67,3 +67,15 @@ Column의 MainAxis 수직(세로) crossAxis 수평(가로)
 #### Row
 Row은 옆에 놓고 싶을 때 사용한다.
 Row의 MainAxis 수평(가로) crossAxis 수직(세로)
+## VSCODE Setting
+Dart에서 코드를 작성할때 const constructors는 const를 사용하는 것을 추천한다.
+color의값 같은 것은 변화가 없기 떄문에 const를 사용 하는 것을 추천한다. 하나하나 const를 추가 하기 귀찮기 떄문에 
+```
+    "editor.codeActionsOnSave": {
+        "source.fixAll": true
+    },
+```
+User settimg.json 파일에 추가 해준다
+## Reusable Widgets
+비슷한 위젯을 사용을 할려면 드레그후 복사 붙이기를 해야한다. 잘못할 경우 오류가 생길 수가있기때문에 Reusable Widgets을 만들어 준다
+재사용하고 싶은 위젯부분을 드레그 한후 ctrl + .Extract Widget 매소드작명을 하면 Reusable Widgets생성이 된다.

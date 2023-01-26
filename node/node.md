@@ -28,3 +28,13 @@ express 설치
 ```
 npm install express
 ```
+nodemon설치 서버자동실행
+```
+npm install -g nodemon
+nodemon server.js //서버실행
+```
+보안오류 (PowerShell 관리자권한 실행)
+```
+executionpolicy
+set-executionpolicy unrestricted
+```

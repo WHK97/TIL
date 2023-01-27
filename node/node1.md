@@ -101,3 +101,162 @@ facebook.com/bbc/photos
 - 띄어쓰기는 언더바_대신 대시-기호-사용
 - 파일 확장자 쓰지 말기 (.html 이런거)
 - 하위 문서들을 뜻할 땐 / 기호를 사용함 (하위폴더같은 느낌)
+## MongoDB 사용해보기
+DB종류
+1. 관계형 SQL: MySQL,Oracle 가로세로 열로 되어있다
+2. NoSQL : MongoDB Object자료형으로 입출력이 가능
+
+MongoDB
+https://www.mongodb.com/cloud/atlas/lp/try4?utm_content=rlsavisitor&utm_source=google&utm_campaign=search_gs_pl_evergreen_atlas_core_retarget-brand_gic-null_apac-all_ps-all_desktop_eng_lead&utm_term=mongodb%20atlas&utm_medium=cpc_paid_search&utm_ad=e&utm_ad_campaign_id=14412646476&adgroup=131761130772&cq_cmp=14412646476&gclid=CjwKCAiA5sieBhBnEiwAR9oh2klny-fgBW6O6jwgltV_f23eGHkLfOONSWeT1NsgxdQ7fYVWbJT9wRoC1X8QAvD_BwE
+
+mongodb 설치
+```
+npm install mongodb
+```
+mongodb연결하기
+MongoClient.connect('URL',function(err,client){
+    app.listen(8080,function(){
+    console.log("listening on 8080");
+  });
+});
+```
+//server.js
+const MongoClient = require('mongodb').MongoClient;
+```
+## Database에 지료저장해보기
+```
+var db; //변수 생성
+MongoClient.connect('mongodb+srv://admin:dyd97849784@cluster0.bfin3cb.mongodb.net/?retryWrites=true&w=majority', (err, client) => {
+  if (err) {
+    return console.log("에러");
+  }
+  db = client.db('todoapp'); // 어떤 DB에 저장을 할 것인지 작성
+  db.collection('collection명').insertOne('저장할 데이터'(Object자료형으로 저장),function(err,결과){
+    
+  }); 
+  app.listen(8080, function () {
+    console.log("listening on 8080");
+  });
+});
+```
+### 작성한 내용 저장하기
+```
+app.post("/add", function (req, res) {
+  db.collection('post').insertOne({title:req.body.title,date:req.body.date},function(err,res){
+    if(err){return console.log("에러");}
+    console.log("저장완료");
+  });
+  res.send("success");
+});
+```
+### 저장한 데이터 보여주기
+ejs파일은 views폴더안에 있어야한다.
+ejs라이브러리 설치
+```
+npm install ejs
+```
+ejs적용
+```
+app.set('view engine','ejs');
+
+app.get('/list',function(req,res){
+  res.render('list.ejs');
+})
+```
+데이터 받기
+```
+<div>
+  <h4>제목:<%= 변수이름%></h4>
+  <p>날짜:</p>
+</div>
+```
+DB에 저장된 내용 꺼내기
+```
+//server.js
+app.get('/list',function(req,res){
+  db.collection('post').find().toArray(function(err,결과){//DB에 있는 모든 데이터 꺼내기
+  res.render('list.ejs',{작명: 결과});
+  }); 
+})
+//list.ejs
+    <div>
+      <h4 할일:<%=작명[0].title%></h4>
+      <p>마감날짜:<%=작명[0].date%></p>
+      <button type="button"  aria-label="Close"></button>
+    </div>
+    //반복문 사용하기
+     <% for (let i = 0; i < 작명.length; i++){ %>
+      <div class="card w-75 mb-3">
+       <div class="card-body">
+        <h4 class="card-title">할일:<%=작명[i].title%></h4>
+        <p class="card-text">마감날짜:<%=작명[i].date%></p>
+        <button type="button" class="btn-close" aria-label="Close"></button>
+      </div>
+    </div>
+  <%}%>
+```
+### DB에 데이터 수정하기 
+게시물 번호 달기
+```
+app.post("/add", function (req, res) {
+  db.collection('counter').findOne({name:"게시물갯수"},function(err,res){
+    console.log(res.totalPost);
+    let totalCount = res.totalPost;
+  db.collection('post').insertOne({title:req.body.title,date:req.body.date,_id: totalCount},function(err,res){
+      if(err){return console.log("에러");}
+      console.log("저장완료"); 
+      db.collection('counter').updateOne({name:"게시물갯수"},{operator:{totalPost:1}},function(){});
+    });
+    totalCount++;
+  });
+
+  res.send("success");
+});
+```
+operator: $set = 값을 바꿀때, $inc = 기존값에 더해줄떄
+## Ajax로 삭제요청
+Ajax는 서버랑 통신할 수 있게 도와주는 JS문법
+```
+//list.ejs
+  <script>
+    $('.delete').click(function(e){
+      let idNumber = e.target.dataset.id;
+      var now = $(this);
+      $.ajax({
+      method: "DELETE",
+      url:"/delete",
+      data: {_id :idNumber }
+    }).done(function (res) {
+      console.log("성공");
+      now.parent('li').fadeOut();
+    }).fail(function(xhr,textStatus,errorThrown){
+      alert(xhr,textStatus,errorThrown)
+    });
+    });
+  </script>
+//server.js
+app.delete('/delete',function(req,res){
+  req.body._id = parseInt(req.body._id);
+  console.log(req.body);
+  db.collection('post').deleteOne(req.body,function(err,결과){
+    console.log("삭제완료");
+    res.status(200).send({message:'성공'});
+    if(err){return res.status(400)}
+  })
+}); 
+```
+## URL parameter (detail페이지만들기)
+```
+//detail.ejs 
+<div class="card-body">
+  <h5><%= data.title %></h5>
+   <h6><%= data.date %></h6>
+</div>
+//server.js
+app.get('/detail/:id',function(req,res){
+  db.collection('post').findOne({_id : parseInt(req.params.id)},function(에러,결과){
+    console.log(결과);
+    res.render('detail.ejs',{data:결과});
+  });
+})
+```

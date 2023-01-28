@@ -253,10 +253,122 @@ app.delete('/delete',function(req,res){
    <h6><%= data.date %></h6>
 </div>
 //server.js
-app.get('/detail/:id',function(req,res){
+app.get('/detail/:id',function(req,res){//post DB안에 _id가 주소id와 같은 번호를 찾기
   db.collection('post').findOne({_id : parseInt(req.params.id)},function(에러,결과){
     console.log(결과);
     res.render('detail.ejs',{data:결과});
   });
 })
+```
+
+## 수정기능
+from에서 PUT, DELETE하기
+```
+// 터미널
+npm install method-override
+//server.js
+const methodOverride = require('method-override')
+app.use(methodOverride('_method'))
+//form
+<form action="/edit?_method=PUT" method="POST"> // form은 POST GET만 사용가능
+</form>
+```
+```
+//edit.ejs
+<form action="/edit?_method=PUT" method="POST">
+  <div class="form-group">
+    <label>오늘의 할일</label>
+    <input type="text" name="id" style="display: none;" value="<%=data._id%>">
+    <input type="text" class="form-control" name="title" value="<%= data.title%>">
+  </div>
+   <div class="form-group">
+     <label>날짜</label>
+      <input type="text" class="form-control" name="date" value="<%= data.date%>">
+  </div>
+   <button type="submit" class="btn btn-outline-secondary">수정</button>
+</form> 
+//server.js
+app.put('/edit',function(req,res){
+  db.collection('post').updateOne({_id:parseInt(req.body.id)},{$set:{title:req.body.title,date:req.body.date}},function(err,결과){
+    res.redirect('/list')
+  });
+})
+```
+## 회원인증 방법
+1. session-based 
+로그인을 하면 서버는 쿠키(브라우저에 저장할 수 있는 공간)를 발행을 한다. 사용자가 로그인이 필요한 페이지를 요청하면 세션을 확인해 이 사람이 로그인 했다는 정보가 있을 경우 보여준다.
+2. JSON Web Token (JWT)
+토큰 방식은 세션데이터를 서버에 저장하지 않고 마이페이지를 열람할 수 있는 열쇠(토큰)을 사용자에게 준다. 열쇠에는 세션방식보다 더 많은 정보가 들어간다.
+서버는 세션데이터 등을 메모리/DB에 저장해둘 필요가 없어 나중에 서버 스케일링시 큰 문제가 없다는 장점도 있다. 단점은 보안에 취약하다.
+3. Open Autentication
+구글,애플,카카오 로그인이다. 사용자의 구글,애플,카카오계정정보를 가져와 가입승인을 한다.
+## session방식으로 회원인증 구현
+```
+npm install passport passport-local express-session // 3가지 라이브러리 설치
+// server.js 추가
+const passport = require('passport');
+const LocalStrategy = require('passport-local').Strategy;
+const session = require('express-session');
+// (app.use)미들웨어(요청-응답 중간에 실행되는 코드) 추가
+app.use(session({secret : '비밀코드', resave : true, saveUninitialized: false}));
+app.use(passport.initialize());
+app.use(passport.session()); 
+```
+
+
+```
+//login
+app.get('/login',function(req,res){
+  res.render('login.ejs');
+});
+app.post('/login',
+passport.authenticate('local',{failureRedirect : '/fail'}), 
+function(req,res){
+  res.redirect('/')
+});
+// 검사
+passport.use(new LocalStrategy({
+  usernameField: 'id', //login.ejs에 <input name>이 id인값
+  passwordField: 'pw',
+  session: true,
+  passReqToCallback: false, // 아이디,비번말고 다른정보 검증시 true
+}, function (입력한아이디, 입력한비번, done) { //파라미터 추가
+  //console.log(입력한아이디, 입력한비번);
+  db.collection('login').findOne({ id: 입력한아이디 }, function (에러, 결과) {
+    if (에러) return done(에러)
+
+    if (!결과) return done(null, false, { message: '존재하지않는 아이디요' })
+    if (입력한비번 == 결과.pw) {
+      return done(null, 결과)
+    } else {
+      return done(null, false, { message: '비번틀렸어요' })
+    }
+  })
+}));
+//세션만들기
+//암호화를 해서 세션을 저장시키는 코드
+passport.serializeUser(function(user,done){ //위 검사코드의 결과가 user에 들어간다.
+  done(null,user.id);
+});
+//(마이페이지 접속시) 이 세션 데이터를 가진 사람을 DB에서 찾기
+passport.deserializeUser(function(아이디,done){
+  //DB에서 user.id로 유저를 찾은 뒤 유저 정보를 done(null,결과);에넣어준다 user.id와 {id: 아이디}같다
+  db.collection('login').findOne({id: 아이디},function(err,결과){
+
+    done(null,결과);
+  })
+});
+
+// mypage
+app.get('/mypage',login,function(req,res){
+  console.log(req.user);
+  res.render('mypage.ejs',{사용자:req.user});
+});
+function login(res,req,next){
+  if(res.user){
+    next();
+  }else{
+    req.send("로그인을 해주세요");
+  }
+}
 ```

@@ -372,3 +372,53 @@ function login(res,req,next){
   }
 }
 ```
+## (GET요청)검색기능
+### URL query string
+```
+    $('.search').click(function(){
+      let searchValue = $('#search-input').val();
+      window.location.replace('/search?value='+searchValue); // 검색버튼 누르면 서버로 query string이 포함된 GET요청을 한다.
+    })
+    //
+    app.get('/search',(req,res)=>{
+  db.collection('post').find({title:req.query.value}).toArray((err,결과)=>{
+    console.log(결과);
+    res.render('search.ejs',{posts:결과})
+  })
+  //console.log(req.query.value);//body가아닌 query에 들어 있다.
+});
+```
+위 코드는 문제점은 정확하게 타이틀과 맞아야 검색이 된다.
+정규식,indexing을 사용해서 문제를 해결해야한다.
+정규식을 사용할 경우 검색의 양이 많을 수록 찾는 속도가 느리다
+indexing을 사용하면 빠르게 찾을 수 있다. 
+indexing을 할려면 DB의 Binary Search를 사용해야 한다. Binary Search는 1부터100의 데이터가 있으면 검색한 데이터가 50이상입니까? 물어보며 예,아니오로 범위를 좁혀 찾는다. 하지만 사용을 할려면 숫자와 문자가 정렬이 되어있어야한다.
+MongoDB index생성:원하는 collection안에서 indexess에서 생성하면 된다 
+```
+{
+  "title": "text", //문자
+  "_id"  : 1  //숫자
+}
+```
+text형식을 등록할때 하나씩 등록을 하는게 아니라 한번에 등록을 해야한다.
+### Search index
+```
+app.get('/search',(req,res)=>{
+  let 조건 = [{
+    $search:{
+      index:"titleSearch",
+      text:{
+        query: req.query.value,
+        path: "title"
+      }
+    }
+  },
+  
+]
+  db.collection('post').aggregate(조건).toArray((err,결과)=>{
+    console.log(결과);
+    res.render('search.ejs',{posts:결과})
+  })
+  //console.log(req.query.value);//body가아닌 query에 들어 있다.
+});
+```

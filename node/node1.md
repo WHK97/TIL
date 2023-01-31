@@ -422,3 +422,40 @@ app.get('/search',(req,res)=>{
   //console.log(req.query.value);//body가아닌 query에 들어 있다.
 });
 ```
+## 회원 기능 이용하기
+```
+// 회원가입
+app.post('/register',(req,res)=>{
+  db.collection('login').insertOne({id:req.body.id,pw:req.body.pw},()=>{
+  });
+  res.redirect('/');
+})
+//delete
+app.delete('/delete',function(req,res){
+  req.body._id = parseInt(req.body._id);
+  let deleteData = {_id:req.body_id,writer:req.user._id} // 작성자와 같은 사람만 삭제
+  db.collection('post').deleteOne(deleteData ,function(err,결과){
+    console.log("삭제완료");
+    res.status(200).send({message:'성공'});
+    if(err){return console.log("작성자가 아닙니다.");}
+  })
+}); 
+// 글작성 페이지
+app.post("/add", function (req, res) {
+  db.collection('counter').findOne({name:"게시물갯수"},function(err,res){
+    console.log(res.totalPost);
+    let totalCount = res.totalPost;
+    let saveData = {title:req.body.title,date:req.body.date,_id: totalCount,writer:req.user._id};// 작성자: id추가해서 DB에 저장
+  db.collection('post').insertOne(saveData,function(err,res){
+      if(err){return console.log("에러");}
+      console.log("저장완료"); 
+      db.collection('counter').updateOne({name:"게시물갯수"},{$inc : {totalPost:1}},function(err,res){
+        if(err){return console.log("err");}
+      
+      });
+    });
+  });
+  res.redirect("/list");
+});
+```
+## router폴더 API관리 하기

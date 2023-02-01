@@ -459,3 +459,72 @@ app.post("/add", function (req, res) {
 });
 ```
 ## router폴더 API관리 하기
+server.js에 모든 요청을 작성을 하면 나중에 코드 수정,찾기가 어렵다. 비슷한 요청끼리 routes폴더안에 묶는 걸 추천한다.
+```
+// ./routes/파일명.js
+let router = require('express').Router();
+router.get('/1/1',(req,res)=>{
+  res.rend('1번페이지');
+});
+router.get('/1/2',(req,res)=>{
+  res.rend('1번페이지');
+});
+// Js파일을 다른곳에서 사용하고 싶을떄 사용한다.module.exports = 내보낼 변수명;
+module.exports = router;
+
+// server.js
+app.use('/',require('./routes/파일명')); 
+
+```
+만약 중복된 주소가 있을 경우
+```
+// ./routes/파일명.js
+let router = require('express').Router();
+router.get('/1',(req,res)=>{
+  res.rend('1번페이지');
+});
+router.get('/2',(req,res)=>{
+  res.rend('1번페이지');
+});
+// server.js
+app.use('/1',require('./routes/파일명')); 
+
+```
+routes안에 로그인 유무같은 미들웨어를 적용해야 될떄가 있다 
+```
+let router = require('express').Router();
+router.use('/특정주소',login); //적용할 곳이 여러곳일떄 또는 특정한 곳만 정할떄
+router.get('/sports',login,(req,res)=>{ //하나만 있을떄 
+  res.send("스포츠");
+});
+function login(res,req,next){
+   if(res.user){
+    next();
+  }else{
+    req.send("로그인을 해주세요");
+   }
+ }
+module.exports = router;
+```
+## 이미지 업로드 & 이미지 서버 만들기
+npm install multer 파일전송 라이브러리
+```
+let multer = require('multer');
+let storage = multer.diskStorage({ // diskStorage:하드디스크에 저장 ,memoryStorage:램에 저장 (휘발성이 있다.)
+  destination: function(req,file,cb){
+    cb(null,'./public/image') //이미지파일을 저장할 경로
+  },filename: function(req,file,cb){
+    cb(null,file.originalname); // 저장된 파일명설정
+  }
+});
+let upload = multer({storage : storage});
+app.get('/upload',(req,res)=>{
+  res.render('upload.ejs');
+});
+app.post('/upload',upload.single('input의 name속성'),(req,res)=>{
+  res.send('성공');
+});
+app.get('/image/:imageName', function(요청, 응답){ // 저장한 파일 불러오기
+  응답.sendFile( __dirname + '/public/image/' + 요청.params.imageName )
+})
+```

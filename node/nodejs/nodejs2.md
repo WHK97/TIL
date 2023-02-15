@@ -3,11 +3,8 @@
 ### 1. 호출 스택
 ![Alt text](../../img/2-1-1.jpg)
 
-<<<<<<< HEAD
 코드의 작동 순서 third -> second -> first
 
-=======
->>>>>>> 54aee7088fa716b405eee70632b495a8864ba7cd
 ![Alt text](../../img/2-1-2.jpg)
 
 함수의 호출, 자료구조의 스택

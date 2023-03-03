@@ -1,5 +1,5 @@
 <template>
-  <div class="post">
+  <div class="post" >
     <div class="post-header">
       <div class="profile" :style= "{backgroundImage: `url(${userData.userImage})`}"></div>
       <span class="profile-name">{{ userData.name }}</span>
@@ -9,7 +9,6 @@
       <p>{{userData.likes}}</p>
       <p><strong>{{ userData.name }}</strong> {{userData.content}}</p>
       <p class="date">{{userData.date}}</p>
-   
     </div>
 </div> 
 </template>
@@ -18,7 +17,7 @@
 export default {
   name:"PostPage",
   props: {
-    userData: Array
+    userData: Array,
   }
 }
 </script>

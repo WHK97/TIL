@@ -4,12 +4,12 @@
       <li>Cancel</li>
     </ul>
     <ul class="header-button-right">
-      <li>Next</li>
+      <li @click="btn">Next</li>
     </ul>
     <img src="./assets/logo.png" class="logo" />
   </div>
   
-  <Container :userData = "userData"/>
+  <Container :userData = "userData" :step = "step"/>
   <button @click="more">더보기</button>
   <div class="footer">
     <ul class="footer-button-plus">
@@ -17,7 +17,12 @@
       <label for="file" class="input-plus">+</label>
     </ul>
  </div>
-  
+  <!-- <div v-if="step == 0">1</div>
+  <div v-if="step == 1">2</div>
+  <div v-if="step == 2">3</div>
+<button @click="step = 0;">1</button>
+<button @click="step = 1;">2</button>
+<button @click="step = 2;">3</button> -->
 </template>
 
 <script>
@@ -29,6 +34,7 @@ export default {
     return{
       userData : user,
       count: 0,
+      step: 0,
     }
    },
   components: {
@@ -43,7 +49,13 @@ export default {
       }).catch((err)=>{
         console.log(err);
       })
-    }
+    },
+    btn(){
+      this.step++
+      if(this.step == 3){
+        this.step = 0;
+      }
+    },
   }
 }
 </script>

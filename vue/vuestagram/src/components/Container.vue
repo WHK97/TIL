@@ -4,32 +4,43 @@
       <Post :userData="userData[i]" v-for="(a, i) in userData" :key="i" />
     </div>
     <!-- 필터선택페이지 -->
-    <div class="upload-image" v-if="step == 1"></div>
-    <div class="filters"  v-if="step == 1">
-      <div class="filter-1"></div>
-      <div class="filter-1"></div>
-      <div class="filter-1"></div>
-      <div class="filter-1"></div>
-      <div class="filter-1"></div>
+    <div v-if="step == 1">
+      <div class="upload-image" :style= "`background-image:url(${url})`"></div>
+        <div class="filters"  >
+          <FilterBox :filter="filterDatas[i]" :url = "url" v-for="(filter,i) in filterDatas" :key="i"  >
+           <template v-slot:filterName>{{filterDatas[i]}}</template>
+          </FilterBox>
+      </div>
     </div>
     <!-- 글작성페이지 -->
-    <div class="upload-image"  v-if="step == 2"></div>
-    <div class="write"  v-if="step == 2">
-      <textarea class="write-box">write!</textarea>
+    <div v-if="step == 2">
+      <div class="upload-image" :style= "`background-image:url(${url})`"></div>
+        <div class="write">
+          <textarea @input="$emit('content',$event.target.value)" class="write-box">write!</textarea>
+        </div>
+      </div>
     </div>
-  </div>
 </template>
 
 <script>
 import Post from "./Post.vue";
+import FilterBox from "./FilterBox.vue";
+import filterData from '../filterData';
 export default {
-  name: "ContainerPage",
+  name: "ContainerPage",  
+  data(){
+    return{
+      filterDatas :filterData,
+    }
+  },
   props: {
     userData: Array,
     step: Number,
+    url: String
   },
   components: {
     Post,
+    FilterBox,
   },
 };
 </script>

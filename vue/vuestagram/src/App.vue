@@ -4,16 +4,17 @@
       <li>Cancel</li>
     </ul>
     <ul class="header-button-right">
-      <li @click="btn">Next</li>
+      <li v-if="step == 1" @click="step++">Next</li>
+      <li v-if="step == 2" @click="publish">발행</li>
     </ul>
     <img src="./assets/logo.png" class="logo" />
   </div>
   
-  <Container :userData = "userData" :step = "step"/>
-  <button @click="more">더보기</button>
+  <Container :userData = "userData" :step = "step" :url = "url" @content="textData=$event" />
+  <button @click="more" v-if="step == 0">더보기</button>
   <div class="footer">
     <ul class="footer-button-plus">
-      <input type="file" id="file" class="inputfile" />
+      <input @change="upload" type="file" id="file" class="inputfile" />
       <label for="file" class="input-plus">+</label>
     </ul>
  </div>
@@ -35,6 +36,8 @@ export default {
       userData : user,
       count: 0,
       step: 0,
+      url: '',
+      textData: "",
     }
    },
   components: {
@@ -50,12 +53,25 @@ export default {
         console.log(err);
       })
     },
-    btn(){
-      this.step++
-      if(this.step == 3){
-        this.step = 0;
-      }
+    publish(){
+      let newData = {  
+        name: "Minny",
+        userImage: "https://placeimg.com/100/100/animals",
+        postImage: this.url,
+        likes: 49,
+        date: "Apr 4",
+        liked: false,
+        content: this.textData,
+        filter: "lofi"
+      };
+      this.userData.unshift(newData);
+      this.step = 0 ;
     },
+    upload(e){
+      let file = e.target.files[0]
+      this.url = URL.createObjectURL(file);
+      this.step = 1;
+    }
   }
 }
 </script>
